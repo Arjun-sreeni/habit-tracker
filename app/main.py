@@ -7,4 +7,3 @@ app = FastAPI(title=settings.app_name, debug=settings.debug)
 app.include_router(router)
 
 
-
