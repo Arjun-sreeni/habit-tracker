@@ -2,7 +2,6 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 
 
-
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
