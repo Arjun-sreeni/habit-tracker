@@ -26,3 +26,16 @@ def create_user(db: Session, user_data: UserCreate):
     db.commit()
     db.refresh(user)
     return user
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def authenticate_user(db: Session, email: str,  password: str):
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+       return None
+    if not verify_password(password, user.hashed_password):
+        return None
+    return user
