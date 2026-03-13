@@ -9,9 +9,8 @@ TEST_DATABASE_URL = "postgresql://habit_user:jaas@localhost:5432/habit_tracker_t
 
 engine = create_engine(TEST_DATABASE_URL)
 
-TestSessionLocal = sessionmaker(
-    bind=engine
-)
+TestSessionLocal = sessionmaker(bind=engine)
+
 
 def override_get_db():
     db = TestSessionLocal()
@@ -20,7 +19,9 @@ def override_get_db():
     finally:
         db.close()
 
+
 app.dependency_overrides[get_db] = override_get_db
+
 
 @pytest.fixture
 def client():
