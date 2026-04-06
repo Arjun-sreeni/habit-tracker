@@ -11,16 +11,20 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
 
-
-class HabitLogs(Base):
+class HabitLog(Base):
     __tablename__ = "habit_logs"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    habit_id: Mapped[int] = mapped_column(ForeignKey("habits.id"), nullable=False)
+    habit_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "habits.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
+    )
     log_date: Mapped[date] = mapped_column(Date, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
-    __table_args__ = (
-        UniqueConstraint("habit_id", "log_date"),
-    )
+    __table_args__ = (UniqueConstraint("habit_id", "log_date"),)
