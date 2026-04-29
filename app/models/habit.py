@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-from sqlalchemy import Integer, String, DateTime, func, Enum, Boolean, false, ForeignKey
+from sqlalchemy import Integer, String, DateTime, func, Enum, Boolean, false, ForeignKey, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
@@ -20,6 +20,9 @@ class Habit(Base):
     )
     frequency: Mapped[FrequencyTypes] = mapped_column(
         Enum(FrequencyTypes), nullable=False
+    )
+    schedule_days: Mapped[list] = mapped_column(
+        JSON, nullable=False
     )
     is_archived: Mapped[bool] = mapped_column(
         Boolean, server_default=false(), nullable=False
