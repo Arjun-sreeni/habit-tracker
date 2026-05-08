@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from pydantic import BaseModel, ConfigDict, model_validator
 from app.models.habit import FrequencyTypes
 
@@ -23,27 +23,27 @@ class HabitCreate(BaseModel):
             if len(self.schedule_days) > 1:
                 raise ValueError("weekly habits does not support more than one day")
             if self.schedule_days[0] not in days:
-                raise ValueError(f"invalid day{self.schedule_days[0]}, Valid days are, mon, tue, wed, thu, fri, sat, sun")
+                raise ValueError(
+                    f"invalid day{self.schedule_days[0]}, Valid days are, mon, tue, wed, thu, fri, sat, sun"
+                )
 
-            
         elif self.frequency == FrequencyTypes.custom:
             if not self.schedule_days:
                 raise ValueError("no custom days given")
             if len(self.schedule_days) != len(set(self.schedule_days)):
                 raise ValueError("duplicates days dont allowed")
             if not set(self.schedule_days).issubset(days):
-                raise ValueError("days must be mon, tue, wed, thu, fri, sat, sun") 
+                raise ValueError("days must be mon, tue, wed, thu, fri, sat, sun")
             if len(self.schedule_days) > 6:
                 raise ValueError("custom days cannot be more than 6 days")
         return self
-        
 
 
 class HabitResponse(BaseModel):
     id: int
     name: str
     frequency: FrequencyTypes
-    schedule_days: list[str] 
+    schedule_days: list[str]
     is_archived: bool
     created_at: datetime
 
@@ -55,3 +55,14 @@ class HabitUpdate(BaseModel):
     frequency: FrequencyTypes | None = None
     is_archived: bool | None = None
     schedule_days: list[str] | None = None
+
+
+class HabitLogCreate(BaseModel):
+    log_date: date
+
+
+class HabitLogResponse(BaseModel):
+    id: int
+    habit_id: int
+    log_date: date
+    created_at: datetime

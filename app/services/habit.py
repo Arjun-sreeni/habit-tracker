@@ -6,7 +6,12 @@ from app.models import Habit
 
 # creating habit
 def create_habit(db: Session, user_id: int, habit_data: HabitCreate) -> Habit:
-    habit = Habit(name=habit_data.name, frequency=habit_data.frequency, user_id=user_id, schedule_days=habit_data.schedule_days)
+    habit = Habit(
+        name=habit_data.name,
+        frequency=habit_data.frequency,
+        user_id=user_id,
+        schedule_days=habit_data.schedule_days,
+    )
     db.add(habit)
     db.commit()
     db.refresh(habit)

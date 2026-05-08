@@ -1,9 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
-from app.schemas.habit import HabitCreate, HabitUpdate, HabitResponse
+from fastapi import APIRouter, Depends, HTTPException, status, Response
+from app.schemas.habit import (
+    HabitCreate,
+    HabitUpdate,
+    HabitResponse,
+    HabitLogCreate,
+    HabitLogResponse,
+)
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.database import get_db
 from sqlalchemy.orm import Session
+from datetime import date
 from app.services.habit import (
     create_habit as create_habit_service,
     get_user_habits,
@@ -11,6 +18,7 @@ from app.services.habit import (
     update_habit as update_habit_service,
     delete_habit as delete_habit_service,
 )
+from app.services.habit_log import log_habit
 
 router = APIRouter(prefix="/habits", tags=["Habit"])
 
@@ -66,3 +74,25 @@ def delete_habit(
     result = delete_habit_service(db, habit_id, user_id)
     if not result:
         raise HTTPException(status_code=404, detail="habit not found")
+
+
+@router.post("/{habit_id}/log", response_model=HabitLogResponse)
+def create_habit_log(
+    log_date: HabitLogCreate,
+    habit_id: int,
+    response: Response,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    user_id = user.id
+    result = log_habit(db, habit_id, user_id, log_date.log_date)
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Habit not found")
+
+    if result["created"]:
+        response.status_code = status.HTTP_201_CREATED
+    else:
+        response.status_code = status.HTTP_200_OK
+
+    return result["log"]
